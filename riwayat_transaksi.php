@@ -1,47 +1,130 @@
 <?php
-// File: riwayat_transaksi.php
 session_start();
 include "koneksi.php";
 if (!isset($_SESSION['id_karyawan'])) header("Location: login.php");
 
 $transaksi = mysqli_query($con, "
-    SELECT t.id_transaksi, t.tanggal_transaksi, p.nama_pelanggan, t.total, k.nama AS nama_karyawan, m.nama_metode
+    SELECT t.id_transaksi, t.tanggal_transaksi, p.nama_pelanggan, t.total, k.nama AS nama_karyawan, t.metode_pembayaran
     FROM transaksi t
     LEFT JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
     LEFT JOIN karyawan k ON t.id_karyawan = k.id_karyawan
-    LEFT JOIN pembayaran pb ON t.id_transaksi = pb.id_transaksi
-    LEFT JOIN metode_pembayaran m ON pb.id_metode = m.id_metode
     ORDER BY t.tanggal_transaksi DESC
 ");
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Riwayat Transaksi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>
+        body { background: #f6f7fb; }
+        .sidebar {
+            background: #23235b;
+            min-height: 100vh;
+            color: #fff;
+            padding: 0;
+        }
+        .sidebar .nav-link, .sidebar .navbar-brand { 
+            color: #fff; 
+        }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover { 
+            background: #35357a; 
+            border-radius: 8px; }
+        .profile-card { 
+            background: #35357a; 
+            color: #fff; 
+            padding: 16px; 
+            margin-top: 20px; 
+        }
+        .navbar-brand { 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            color: #fff; 
+            margin-left: 16px; }
+        .main-content { 
+            background: #fff; 
+            border-radius: 16px; 
+            padding: 24px 32px; 
+            margin: 32px 0; 
+            box-shadow: 0 2px 12px rgba(50, 117, 183, 0.07);
+        }
+        .table thead { 
+            background: #f3f4f6; 
+        }
+        .table th { 
+            font-weight: 600; 
+        }
+        .table td, .table th { 
+            vertical-align: middle !important; 
+        }
+        .dashboard-title {
+            font-size: 1.7rem;
+            font-weight: bold;
+            margin-bottom: 24px;
+        }
+        .btn-secondary {
+            background-color: #35357a;
+            border-color: #6c757d;
+        }
+        .btn-back {
+            margin-bottom: 18px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Riwayat Transaksi</h2>
-    <table border="1" cellpadding="8" cellspacing="0">
-        <tr>
-            <th>No</th>
-            <th>Tanggal</th>
-            <th>Pelanggan</th>
-            <th>Total</th>
-            <th>Metode</th>
-            <th>Petugas</th>
-        </tr>
-        <?php $no = 1; while ($t = mysqli_fetch_assoc($transaksi)) { ?>
-        <tr>
-            <td><?= $no++ ?></td>
-            <td><?= date('d-m-Y H:i', strtotime($t['tanggal_transaksi'])) ?></td>
-            <td><?= $t['nama_pelanggan'] ?></td>
-            <td>Rp<?= number_format($t['total']) ?></td>
-            <td><?= $t['nama_metode'] ?></td>
-            <td><?= $t['nama_karyawan'] ?></td>
-        </tr>
-        <?php } ?>
-        <p><a href="transaksi.php">Kembali ke Transaksi</a></p>
-    </table>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block sidebar py-4">
+            <div class="navbar-brand mb-4">7Eleven Mart</div>
+            <ul class="nav flex-column mb-4">
+                <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="karyawan.php">Karyawan</a></li>
+                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Pelanggan</a></li>
+                <li class="nav-item"><a class="nav-link" href="produk.php">Produk</a></li>
+                <li class="nav-item"><a class="nav-link" href="transaksi.php">Transaksi</a></li>
+                <li class="nav-item"><a class="nav-link active" href="riwayat_transaksi.php">Riwayat</a></li>
+                <li class="nav-item"><a class="nav-link text-danger font-weight-bold" href="logout.php">Logout</a></li>
+            </ul>
+            <div class="profile-card">
+                <div><b><?php echo $_SESSION['nama']; ?></b></div>
+                <div style="font-size:13px;"><?php echo $_SESSION['jabatan']; ?></div>
+            </div>
+        </nav>
+        <!-- Main Content -->
+        <main class="col-md-10 ml-sm-auto px-4">
+            <div class="main-content">
+                <div class="dashboard-title">Riwayat Transaksi</div>
+                <a href="transaksi.php" class="btn btn-secondary btn-back mb-3">&larr; Kembali ke Transaksi</a>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Pelanggan</th>
+                                <th>Total</th>
+                                <th>Petugas</th>
+                                <th>Detail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php $no = 1; while ($t = mysqli_fetch_assoc($transaksi)) { ?>
+                            <tr>
+                                <td><?= $no++ ?></td>
+                                <td><?= date('d-m-Y H:i', strtotime($t['tanggal_transaksi'])) ?></td>
+                                <td><?= htmlspecialchars($t['nama_pelanggan']) ?></td>
+                                <td>Rp<?= number_format($t['total'],0,',','.') ?></td>
+                                <td><?= htmlspecialchars($t['nama_karyawan']) ?></td>
+                                <td><a href="detail_riwayat.php?id=<?= $t['id_transaksi'] ?>" class="btn btn-info">Lihat</a></td>
+                            </tr>
+                        <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
 </body>
 </html>
