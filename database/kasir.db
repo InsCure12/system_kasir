@@ -1,0 +1,75 @@
+CREATE DATABASE kasir;
+USE kasir;
+
+-- 1. Tabel-tabel tanpa foreign key
+CREATE TABLE pelanggan (
+    id_pelanggan INT AUTO_INCREMENT PRIMARY KEY,
+    nama_pelanggan VARCHAR(100),
+    no_telepon VARCHAR(15)
+);
+
+CREATE TABLE produk (
+    id_produk INT AUTO_INCREMENT PRIMARY KEY,
+    nama_produk VARCHAR(100),
+    harga DECIMAL(10,2),
+    stok INT
+);
+
+CREATE TABLE diskon (
+    id_diskon INT AUTO_INCREMENT PRIMARY KEY,
+    nama_diskon VARCHAR(100),
+    tipe_diskon ENUM('persen', 'nominal'),
+    nilai DECIMAL(10,2),
+    berlaku_mulai DATE,
+    berlaku_sampai DATE
+);
+
+CREATE TABLE metode_pembayaran (
+    id_metode INT AUTO_INCREMENT PRIMARY KEY,
+    nama_metode VARCHAR(50)
+);
+
+CREATE TABLE karyawan (
+    id_karyawan INT AUTO_INCREMENT PRIMARY KEY,
+    nama VARCHAR(100),
+    jabatan VARCHAR(50),
+    username VARCHAR(50),
+    password VARCHAR(50)
+);
+
+-- 2. Tabel-tabel yang punya foreign key
+CREATE TABLE transaksi (
+    id_transaksi INT AUTO_INCREMENT PRIMARY KEY,
+    id_pelanggan INT,
+    id_diskon INT,
+    id_karyawan INT,
+    tanggal_transaksi DATETIME,
+    total DECIMAL(10,2),
+    FOREIGN KEY (id_pelanggan) REFERENCES pelanggan(id_pelanggan),
+    FOREIGN KEY (id_diskon) REFERENCES diskon(id_diskon),
+    FOREIGN KEY (id_karyawan) REFERENCES karyawan(id_karyawan)
+);
+
+CREATE TABLE detail_transaksi (
+    id_detail INT AUTO_INCREMENT PRIMARY KEY,
+    id_transaksi INT,
+    id_produk INT,
+    jumlah INT,
+    subtotal DECIMAL(10,2),
+    FOREIGN KEY (id_transaksi) REFERENCES transaksi(id_transaksi),
+    FOREIGN KEY (id_produk) REFERENCES produk(id_produk)
+);
+
+CREATE TABLE pembayaran (
+    id_pembayaran INT AUTO_INCREMENT PRIMARY KEY,
+    id_transaksi INT,
+    id_metode INT,
+    jumlah_bayar DECIMAL(10,2),
+    kembalian DECIMAL(10,2),
+    FOREIGN KEY (id_transaksi) REFERENCES transaksi(id_transaksi),
+    FOREIGN KEY (id_metode) REFERENCES metode_pembayaran(id_metode)
+);
+
+-- 3. Insert data karyawan awal
+INSERT INTO karyawan (nama, jabatan, username, password)
+VALUES ('Admin Toko', 'admin', 'admin', '12345');
