@@ -79,7 +79,7 @@ include 'koneksi.php';
         <!-- Main Content -->
         <main class="col-md-10 ml-sm-auto px-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-2 mb-3 border-bottom">
-                <h2>Viewer Demographics</h2>
+                <h2>Sales Graphics</h2>
                 <div>Selamat datang, <b><?php echo $_SESSION['nama']; ?></b></div>
             </div>
             <!-- Statistic Cards -->

@@ -9,14 +9,24 @@ if (isset($_POST['simpan'])) {
     $harga = $_POST['harga'];
     $stok = $_POST['stok'];
 
-    if (empty($nama) || empty($harga) || empty($stok)) {
+    // Proses upload gambar
+    $gambar = '';
+    if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] == 0) {
+        $ext = pathinfo($_FILES['gambar']['name'], PATHINFO_EXTENSION);
+        $namaFile = uniqid('produk_') . '.' . $ext;
+        if (!is_dir('uploads')) mkdir('uploads');
+        move_uploaded_file($_FILES['gambar']['tmp_name'], 'uploads/' . $namaFile);
+        $gambar = $namaFile;
+    }
+
+    if (empty($nama) || empty($harga) || empty($stok) || empty($gambar)) {
         echo "<script>alert('Semua kolom wajib diisi!');</script>";
     } else {
         $cek = mysqli_query($con, "SELECT * FROM produk WHERE nama_produk='$nama'");
         if (mysqli_num_rows($cek) > 0) {
             echo "<script>alert('Nama produk sudah ada!');</script>";
         } else {
-            $sql = "INSERT INTO produk (nama_produk, harga, stok) VALUES ('$nama', '$harga', '$stok')";
+            $sql = "INSERT INTO produk (nama_produk, harga, stok, gambar) VALUES ('$nama', '$harga', '$stok', '$gambar')";
             $result = mysqli_query($con, $sql);
             if ($result) {
                 echo "<script>alert('Produk berhasil ditambahkan');window.location='produk.php';</script>";
@@ -56,26 +66,65 @@ $produk = mysqli_query($con, "SELECT * FROM produk ORDER BY nama_produk ASC");
             color: #fff; 
             padding: 16px; 
             margin-top: 20px; 
-            border-radius: 12px; 
         }
         .navbar-brand { 
             font-size: 1.5rem; 
             font-weight: bold; 
             color: #fff; 
             margin-left: 16px; }
-        .main-content { background: #fff; border-radius: 16px; padding: 24px 32px; margin: 32px 0; box-shadow: 0 2px 12px rgba(44,62,80,0.07);}
-        .table thead { background: #f3f4f6; }
-        .table th { font-weight: 600; }
-        .table td, .table th { vertical-align: middle !important; }
-        .btn-danger { background: #dc3545; border: none; }
-        .btn-warning { background: #ffb74d; border: none; color: #23235b; }
-        .btn-primary { background: #4f3cc9; border: none; }
-        .search-bar { width: 320px; }
-        .stock-low { color: #e67e22; font-weight: 600; }
-        .stock-out { color: #e74c3c; font-weight: 600; }
-        .stock-ok { color: #2ecc71; font-weight: 600; }
-        .table-img { width: 38px; height: 38px; object-fit: cover; border-radius: 6px; }
-        .bulk-actions { font-size: 15px; color: #555; }
+        .main-content { 
+            background: #fff; 
+            border-radius: 16px; 
+            padding: 24px 32px; 
+            margin: 32px 0; 
+            box-shadow: 0 2px 12px rgba(44,62,80,0.07);
+        }
+        .table thead { 
+            background: #f3f4f6; 
+        }
+        .table th { 
+            font-weight: 600; 
+        }
+        .table td, .table th { 
+            vertical-align: middle !important; 
+        }
+        .btn-danger { 
+            background: #dc3545; border: none; 
+        }
+        .btn-warning { 
+            background: #ffb74d; 
+            border: none; 
+            color: #23235b; 
+        }
+        .btn-primary { 
+            background: #4f3cc9; 
+            border: none; 
+        }
+        .search-bar { 
+            width: 320px; 
+        }
+        .stock-low { 
+            color: #e67e22; 
+            font-weight: 600; 
+        }
+        .stock-out { 
+            color: #e74c3c; 
+            font-weight: 600; 
+        }
+        .stock-ok { 
+            color: #2ecc71; 
+            font-weight: 600;
+        }
+        .table-img { 
+            width: 38px; 
+            height: 38px; 
+            object-fit: cover; 
+            border-radius: 6px; 
+        }
+        .bulk-actions { 
+            font-size: 15px; 
+            color: #555; 
+        }
     </style>
 </head>
 <body>
@@ -155,7 +204,7 @@ $produk = mysqli_query($con, "SELECT * FROM produk ORDER BY nama_produk ASC");
             <!-- Modal Tambah Produk -->
             <div class="modal fade" id="modalTambahProduk" tabindex="-1" role="dialog" aria-labelledby="modalTambahProdukLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
-                    <form method="POST" action="produk.php">
+                    <form method="POST" action="produk.php" enctype="multipart/form-data">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="modalTambahProdukLabel">Tambah Produk</h5>
@@ -176,6 +225,10 @@ $produk = mysqli_query($con, "SELECT * FROM produk ORDER BY nama_produk ASC");
                                     <label>Stok:</label>
                                     <input type="number" name="stok" class="form-control" required>
                                 </div>
+                                <div class="form-group">
+                                    <label>Gambar Produk:</label>
+                                    <input type="file" name="gambar" class="form-control" accept="image/*" required>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -188,6 +241,8 @@ $produk = mysqli_query($con, "SELECT * FROM produk ORDER BY nama_produk ASC");
         </main>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Checkbox select all
     document.getElementById('selectAll').onclick = function() {

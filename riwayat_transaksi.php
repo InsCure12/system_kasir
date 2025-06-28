@@ -30,7 +30,6 @@ $transaksi = mysqli_query($con, "
             <th>Total</th>
             <th>Metode</th>
             <th>Petugas</th>
-            <th>Detail</th>
         </tr>
         <?php $no = 1; while ($t = mysqli_fetch_assoc($transaksi)) { ?>
         <tr>
@@ -40,7 +39,6 @@ $transaksi = mysqli_query($con, "
             <td>Rp<?= number_format($t['total']) ?></td>
             <td><?= $t['nama_metode'] ?></td>
             <td><?= $t['nama_karyawan'] ?></td>
-            <td><a href="detail_riwayat.php?id=<?= $t['id_transaksi'] ?>">Lihat</a></td>
         </tr>
         <?php } ?>
         <p><a href="transaksi.php">Kembali ke Transaksi</a></p>
