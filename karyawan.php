@@ -88,7 +88,7 @@ if (isset($_POST['simpan'])) {
             <ul class="nav flex-column mb-4">
                 <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link active" href="#">Karyawan</a></li>
-                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Pelanggan</a></li>
+                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Member</a></li>
                 <li class="nav-item"><a class="nav-link" href="produk.php">Produk</a></li>
                 <li class="nav-item"><a class="nav-link" href="transaksi.php">Transaksi</a></li>
                 <li class="nav-item"><a class="nav-link" href="riwayat_transaksi.php">Riwayat</a></li>

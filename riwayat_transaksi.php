@@ -1,10 +1,12 @@
 <?php
 session_start();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 include "koneksi.php";
 if (!isset($_SESSION['id_karyawan'])) header("Location: login.php");
 
 $transaksi = mysqli_query($con, "
-    SELECT t.id_transaksi, t.tanggal_transaksi, p.nama_pelanggan, t.total, k.nama AS nama_karyawan, t.metode_pembayaran
+    SELECT t.id_transaksi, t.tanggal_transaksi, p.nama_pelanggan, t.total, k.nama AS nama_karyawan, t.id_metode
     FROM transaksi t
     LEFT JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
     LEFT JOIN karyawan k ON t.id_karyawan = k.id_karyawan
@@ -80,7 +82,7 @@ $transaksi = mysqli_query($con, "
             <ul class="nav flex-column mb-4">
                 <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="karyawan.php">Karyawan</a></li>
-                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Pelanggan</a></li>
+                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Member</a></li>
                 <li class="nav-item"><a class="nav-link" href="produk.php">Produk</a></li>
                 <li class="nav-item"><a class="nav-link" href="transaksi.php">Transaksi</a></li>
                 <li class="nav-item"><a class="nav-link active" href="riwayat_transaksi.php">Riwayat</a></li>
@@ -116,7 +118,12 @@ $transaksi = mysqli_query($con, "
                                 <td><?= htmlspecialchars($t['nama_pelanggan']) ?></td>
                                 <td>Rp<?= number_format($t['total'],0,',','.') ?></td>
                                 <td><?= htmlspecialchars($t['nama_karyawan']) ?></td>
-                                <td><a href="detail_riwayat.php?id=<?= $t['id_transaksi'] ?>" class="btn btn-info">Lihat</a></td>
+                                <td>
+                                    <button class="btn btn-info btn-sm btn-detail" 
+                                    data-id="<?= $t['id_transaksi'] ?>">
+                                    Lihat
+                                </button>
+                                </td>
                             </tr>
                         <?php } ?>
                         </tbody>
@@ -126,5 +133,33 @@ $transaksi = mysqli_query($con, "
         </main>
     </div>
 </div>
+<div class="modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDetailLabel">Detail Transaksi</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalDetailBody">
+        <!-- Isi detail transaksi akan dimuat via AJAX -->
+        <div class="text-center py-4">Memuat...</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).on('click', '.btn-detail', function() {
+    var id = $(this).data('id');
+    $('#modalDetailBody').html('<div class="text-center py-4">Memuat...</div>');
+    $('#modalDetail').modal('show');
+    $.get('ajax_detail_riwayat.php', {id: id}, function(res) {
+        $('#modalDetailBody').html(res);
+    });
+});
+</script>
 </body>
 </html>

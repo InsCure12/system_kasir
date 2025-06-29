@@ -65,7 +65,7 @@ include 'koneksi.php';
             <ul class="nav flex-column mb-4">
                 <li class="nav-item"><a class="nav-link active" href="#">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="karyawan.php">Karyawan</a></li>
-                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Pelanggan</a></li>
+                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Member</a></li>
                 <li class="nav-item"><a class="nav-link" href="produk.php">Produk</a></li>
                 <li class="nav-item"><a class="nav-link" href="transaksi.php">Transaksi</a></li>
                 <li class="nav-item"><a class="nav-link" href="riwayat_transaksi.php">Riwayat</a></li>
@@ -94,7 +94,7 @@ include 'koneksi.php';
                             echo "Rp " . number_format($d['total'] ? $d['total'] : 0, 0, ',', '.');
                             ?>
                         </div>
-                        <div class="text-success" style="font-size:13px;">+12.4% since last week</div>
+                        <div class="<?= $percent_class ?>" style="font-size:13px;"><?= $percent_label ?></div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-3">
@@ -107,12 +107,12 @@ include 'koneksi.php';
                             echo $d['total'];
                             ?>
                         </div>
-                        <div class="text-danger" style="font-size:13px;">-1.3% since last week</div>
+                        <div class="<?= $percent_orders_class ?>" style="font-size:13px;"><?= $percent_orders_label ?></div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-3">
                     <div class="card card-stat p-3">
-                        <div class="stat-label">Total Customers</div>
+                        <div class="stat-label">Total Member's</div>
                         <div class="stat-value">
                             <?php
                             $q = mysqli_query($con, "SELECT COUNT(*) as total FROM pelanggan");
@@ -120,7 +120,6 @@ include 'koneksi.php';
                             echo $d['total'];
                             ?>
                         </div>
-                        <div class="text-success" style="font-size:13px;">+3.2% since last week</div>
                     </div>
                 </div>
             </div>
@@ -130,7 +129,9 @@ include 'koneksi.php';
                     <div class="card p-3 mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span><b>Sales Report</b></span>
-                            <span style="font-size:13px;">Avg per month: <b>Rp38.500</b></span>
+                            <span style="font-size:13px;">
+                                Avg per month: <b>Rp<?= number_format($avg_per_month, 0, ',', '.') ?></b>
+                            </span>
                         </div>
                         <canvas id="barChart" height="120"></canvas>
                     </div>
@@ -237,6 +238,44 @@ for ($i = 11; $i >= 0; $i--) {
     $monthLabels[] = $label;
 }
 ?>
+<?php
+// Hitung rata-rata total transaksi per bulan (12 bulan terakhir)
+$q = mysqli_query($con, "
+    SELECT YEAR(tanggal_transaksi) as tahun, MONTH(tanggal_transaksi) as bulan, SUM(total) as total_bulan
+    FROM transaksi
+    GROUP BY tahun, bulan
+    ORDER BY tahun DESC, bulan DESC
+    LIMIT 12
+");
+$total = 0;
+$bulan = 0;
+while ($row = mysqli_fetch_assoc($q)) {
+    $total += $row['total_bulan'];
+    $bulan++;
+}
+$avg_per_month = $bulan > 0 ? $total / $bulan : 0;
+?>
+<?php
+// Total penjualan hari ini
+$q = mysqli_query($con, "SELECT SUM(total) as total FROM transaksi WHERE DATE(tanggal_transaksi) = CURDATE()");
+$d = mysqli_fetch_assoc($q);
+$total_today = $d['total'] ?? 0;
+
+// Total penjualan kemarin
+$q = mysqli_query($con, "SELECT SUM(total) as total FROM transaksi WHERE DATE(tanggal_transaksi) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)");
+$d = mysqli_fetch_assoc($q);
+$total_yesterday = $d['total'] ?? 0;
+
+// Hitung persentase perubahan
+if ($total_yesterday > 0) {
+    $percent = (($total_today - $total_yesterday) / $total_yesterday) * 100;
+} else {
+    $percent = $total_today > 0 ? 100 : 0;
+}
+$percent_label = ($percent >= 0 ? '+' : '') . number_format($percent, 1) . '% since yesterday';
+$percent_class = $percent >= 0 ? 'text-success' : 'text-danger';
+?>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     var ctx = document.getElementById('barChart').getContext('2d');

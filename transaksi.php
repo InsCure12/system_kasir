@@ -8,12 +8,16 @@ $produk = mysqli_query($con, "SELECT * FROM produk WHERE stok > 0 ORDER BY nama_
 
 //Ambil Metode Pembayaran
 $metode = mysqli_query($con, "SELECT * FROM metode_pembayaran");
+
+//ambil diskon
+$diskonList = mysqli_query($con, "SELECT nilai FROM diskon GROUP BY nilai ORDER BY nilai DESC");
 ?>
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart'])) {
     $cart = json_decode($_POST['cart'], true);
     $diskon_persen = intval($_POST['diskon']);
     $total = intval($_POST['total']);
+    $id_metode = intval($_POST['metode']);
     $id_karyawan = $_SESSION['id_karyawan'];
     $tanggal = date('Y-m-d H:i:s');
     $nama_pelanggan = mysqli_real_escape_string($con, $_POST['nama_pelanggan']);
@@ -43,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart'])) {
     }
 
     // Simpan transaksi
-    $q1 = mysqli_query($con, "INSERT INTO transaksi (id_pelanggan, id_diskon, id_karyawan, tanggal_transaksi, total) VALUES ($id_pelanggan, $id_diskon, $id_karyawan, '$tanggal', $total)");
+    $q1 = mysqli_query($con, "INSERT INTO transaksi (id_pelanggan, id_diskon, id_karyawan, tanggal_transaksi, total, id_metode) VALUES ($id_pelanggan, $id_diskon, $id_karyawan, '$tanggal', $total, $id_metode)");
     if (!$q1) {
         echo "Transaksi: " . mysqli_error($con);
         exit;
@@ -222,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart'])) {
             <ul class="nav flex-column mb-4">
                 <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="karyawan.php">Karyawan</a></li>
-                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Pelanggan</a></li>
+                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Member</a></li>
                 <li class="nav-item"><a class="nav-link" href="produk.php">Produk</a></li>
                 <li class="nav-item"><a class="nav-link active" href="transaksi.php">Transaksi</a></li>
                 <li class="nav-item"><a class="nav-link" href="riwayat_transaksi.php">Riwayat</a></li>
@@ -284,10 +288,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart'])) {
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Metode Pembayaran</span>
-                            <select id="metodePembayaran" class="form-control" style="width: 60%;">
-                                <?php
-                                while($m = mysqli_fetch_assoc($metode)) { ?>
-                                    <option value="<?= htmlspecialchars($m['nama_metode']) ?>">
+                            <select id="metodePembayaran" name="metode" class="form-control" style="width: 60%;">
+                                <?php while($m = mysqli_fetch_assoc($metode)) { ?>
+                                    <option value="<?= $m['id_metode'] ?>">
                                         <?= htmlspecialchars($m['nama_metode']) ?>
                                     </option>
                                 <?php } ?>
@@ -295,7 +298,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart'])) {
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Discount (%)</span>
-                            <input type="number" id="diskonInput" value="0" min="0" max="100" style="width:60px;">
+                            <select id="diskonInput" class="form-control" style="width: 60%;">
+                                <option value="0">0%</option>
+                                <?php while($d = mysqli_fetch_assoc($diskonList)) {
+                                    if ($d['nilai'] == 0) continue; ?>
+                                    <option value="<?= $d['nilai'] ?>"><?= $d['nilai'] ?>%</option>
+                                <?php } ?>
+                            </select>
                         </div>
                         <div class="d-flex justify-content-between mb-2">
                             <span>Sub Total</span>
@@ -311,7 +320,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart'])) {
                         </div>
                         <div class="d-flex justify-content-between">
                             <button class="btn btn-cancel" onclick="resetCart()">Cancel Order</button>
-                            <button class="btn btn-hold" onclick="alert('Fitur Hold Order belum tersedia')">Hold Order</button>
                             <button class="btn btn-pay" onclick="payOrder()">Pay (<span id="payTotal">Rp0</span>)</button>
                         </div>
                     </div>
@@ -387,10 +395,15 @@ function payOrder() {
     let total = document.getElementById('grandTotal').innerText.replace(/[^\d]/g, '');
     let namaPelanggan = document.getElementById('namaPelanggan').value.trim();
     if(namaPelanggan === "") return alert('Nama pelanggan wajib diisi!');
+    let metode = document.getElementById('metodePembayaran').value;
     fetch(window.location.href, {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'cart=' + encodeURIComponent(JSON.stringify(cart)) + '&diskon=' + diskon + '&total=' + total + '&nama_pelanggan=' + encodeURIComponent(namaPelanggan)
+        body: 'cart=' + encodeURIComponent(JSON.stringify(cart)) +
+            '&diskon=' + diskon +
+            '&total=' + total +
+            '&nama_pelanggan=' + encodeURIComponent(namaPelanggan) +
+            '&metode=' + encodeURIComponent(metode)
     })
     .then(res => res.text())
     .then(res => {
@@ -423,7 +436,7 @@ document.querySelectorAll('.produk-card').forEach(card => {
         );
     }
 });
-document.getElementById('diskonInput').oninput = renderCart;
+document.getElementById('diskonInput').onchange = renderCart;
 renderCart();
 
 // Search produk
