@@ -157,7 +157,7 @@ include 'koneksi.php';
                                         FROM transaksi t
                                         JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
                                         ORDER BY t.tanggal_transaksi DESC
-                                        LIMIT 7");
+                                        LIMIT 7"); 
                                     while ($row = mysqli_fetch_assoc($query)) {
                                         $status = strtolower($row['status']);
                                         $badge = 'status-badge ';

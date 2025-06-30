@@ -16,7 +16,12 @@ if (isset($_POST['update'])) {
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>Ubah Produk</title></head>
+<head>
+    <title>Ubah Produk</title>
+    <style>
+        
+    </style>
+</head>
 <body>
 <h2>Ubah Produk</h2>
 <form method="POST">

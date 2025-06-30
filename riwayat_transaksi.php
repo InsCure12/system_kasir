@@ -156,7 +156,7 @@ $(document).on('click', '.btn-detail', function() {
     var id = $(this).data('id');
     $('#modalDetailBody').html('<div class="text-center py-4">Memuat...</div>');
     $('#modalDetail').modal('show');
-    $.get('ajax_detail_riwayat.php', {id: id}, function(res) {
+    $.get('detail_riwayat.php', {id: id}, function(res) {
         $('#modalDetailBody').html(res);
     });
 });

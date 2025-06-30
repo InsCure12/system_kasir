@@ -7,7 +7,7 @@ if (!isset($_SESSION['id_karyawan'])) header("Location: login.php");
 // Jika tidak ada data metode pembayaran, tambahkan default
 $cek = mysqli_num_rows(mysqli_query($con, "SELECT * FROM metode_pembayaran"));
 if ($cek == 0) {
-    mysqli_query($con, "INSERT INTO metode_pembayaran (nama_metode) VALUES ('Cash'), ('Transfer')");
+    mysqli_query($con, "INSERT INTO metode_pembayaran (nama_metode) VALUES ('Cash'), ('Qris'), ('Debit')");
 }
 
 $metode = mysqli_query($con, "SELECT * FROM metode_pembayaran");
