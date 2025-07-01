@@ -1,17 +1,17 @@
-<?php
+<!-- <?php
 session_start();
-include "koneksi.php";
-if (!isset($_SESSION['id_karyawan'])) header("Location: login.php");
+// include "koneksi.php";
+// if (!isset($_SESSION['id_karyawan'])) header("Location: login.php");
 
-$id = $_GET['id'];
-$data = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM produk WHERE id_produk=$id"));
+// $id = $_GET['id'];
+// $data = mysqli_fetch_assoc(mysqli_query($con, "SELECT * FROM produk WHERE id_produk=$id"));
 
-if (isset($_POST['update'])) {
-    $nama = $_POST['nama'];
-    $harga = $_POST['harga'];
-    $stok = $_POST['stok'];
-    mysqli_query($con, "UPDATE produk SET nama_produk='$nama', harga='$harga', stok='$stok' WHERE id_produk=$id");
-    header("Location: produk.php");
+// if (isset($_POST['update'])) {
+//     $nama = $_POST['nama'];
+//     $harga = $_POST['harga'];
+//     $stok = $_POST['stok'];
+//     mysqli_query($con, "UPDATE produk SET nama_produk='$nama', harga='$harga', stok='$stok' WHERE id_produk=$id");
+//     header("Location: produk.php");
 }
 ?>
 <!DOCTYPE html>
@@ -34,4 +34,4 @@ if (isset($_POST['update'])) {
     <button type="submit" name="update">Update</button>
 </form>
 </body>
-</html>
+</html> -->

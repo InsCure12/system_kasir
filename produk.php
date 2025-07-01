@@ -39,6 +39,27 @@ if (isset($_POST['simpan'])) {
 }
 
 $produk = mysqli_query($con, "SELECT * FROM produk ORDER BY nama_produk ASC");
+
+if (isset($_POST['update'])) {
+    $id = intval($_POST['edit_id']);
+    $nama = $_POST['edit_nama_produk'];
+    $harga = $_POST['edit_harga'];
+    $stok = $_POST['edit_stok'];
+
+    // Proses upload gambar jika ada
+    $gambar_sql = '';
+    if (isset($_FILES['edit_gambar']) && $_FILES['edit_gambar']['error'] == 0) {
+        $ext = pathinfo($_FILES['edit_gambar']['name'], PATHINFO_EXTENSION);
+        $namaFile = uniqid('produk_') . '.' . $ext;
+        if (!is_dir('uploads')) mkdir('uploads');
+        move_uploaded_file($_FILES['edit_gambar']['tmp_name'], 'uploads/' . $namaFile);
+        $gambar_sql = ", gambar='$namaFile'";
+    }
+
+    mysqli_query($con, "UPDATE produk SET nama_produk='$nama', harga='$harga', stok='$stok' $gambar_sql WHERE id_produk=$id");
+    echo "<script>alert('Produk berhasil diupdate!');window.location='produk.php';</script>";
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -192,7 +213,15 @@ $produk = mysqli_query($con, "SELECT * FROM produk ORDER BY nama_produk ASC");
                                     ?>
                                 </td>
                                 <td>
-                                    <a href="edit_produk.php?id=<?= $p['id_produk'] ?>" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                                    <a href="#" 
+                                    class="btn btn-warning btn-sm btn-edit-produk"
+                                    data-id="<?= $p['id_produk'] ?>"
+                                    data-nama="<?= htmlspecialchars($p['nama_produk']) ?>"
+                                    data-harga="<?= $p['harga'] ?>"
+                                    data-stok="<?= $p['stok'] ?>"
+                                    >
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
                                     <a href="hapus_produk.php?id=<?= $p['id_produk'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus produk ini?')"><i class="bi bi-trash"></i></a>
                                 </td>
                             </tr>
@@ -238,6 +267,43 @@ $produk = mysqli_query($con, "SELECT * FROM produk ORDER BY nama_produk ASC");
                     </form>
                 </div>
             </div>
+            <div class="modal fade" id="modalEditProduk" tabindex="-1" role="dialog" aria-labelledby="modalEditProdukLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <form method="POST" id="formEditProduk" enctype="multipart/form-data">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalEditProdukLabel">Edit Produk</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="edit_id" id="edit_id">
+                                <div class="form-group">
+                                    <label>Nama Produk:</label>
+                                    <input type="text" name="edit_nama_produk" id="edit_nama_produk" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Harga:</label>
+                                    <input type="number" name="edit_harga" id="edit_harga" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Stok:</label>
+                                    <input type="number" name="edit_stok" id="edit_stok" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ganti Gambar Produk (opsional):</label>
+                                    <input type="file" name="edit_gambar" class="form-control" accept="image/*">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                <button type="submit" name="update" class="btn btn-primary">Update</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </main>
     </div>
 </div>
@@ -257,7 +323,14 @@ $produk = mysqli_query($con, "SELECT * FROM produk ORDER BY nama_produk ASC");
             var text = row.innerText.toLowerCase();
             row.style.display = text.indexOf(filter) > -1 ? '' : 'none';
         });
-    };
+        };
+        $('.btn-edit-produk').on('click', function() {
+        $('#edit_id').val($(this).data('id'));
+        $('#edit_nama_produk').val($(this).data('nama'));
+        $('#edit_harga').val($(this).data('harga'));
+        $('#edit_stok').val($(this).data('stok'));
+        $('#modalEditProduk').modal('show');
+    });
 </script>
 </body>
 </html>

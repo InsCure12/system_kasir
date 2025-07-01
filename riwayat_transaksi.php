@@ -146,11 +146,18 @@ $transaksi = mysqli_query($con, "
         <!-- Isi detail transaksi akan dimuat via AJAX -->
         <div class="text-center py-4">Memuat...</div>
       </div>
+      <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            <button type="button" class="btn btn-primary" id="btnCetakStruk">
+                Cetak Struk
+            </button>
+        </div>
     </div>
   </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).on('click', '.btn-detail', function() {
     var id = $(this).data('id');
@@ -160,6 +167,24 @@ $(document).on('click', '.btn-detail', function() {
         $('#modalDetailBody').html(res);
     });
 });
+$(document).on('click', '.btn-detail', function() {
+    var id = $(this).data('id');
+    $('#modalDetailBody').html('<div class="text-center py-4">Memuat...</div>');
+    $('#modalDetail').modal('show');
+    $.get('detail_riwayat.php', {id: id}, function(res) {
+        $('#modalDetailBody').html(res);
+        // Simpan id transaksi di tombol cetak
+        $('#btnCetakStruk').data('id', id);
+    });
+});
+
+document.getElementById('btnCetakStruk').onclick = function() {
+    Swal.fire({
+        icon: 'info',
+        title: 'Cetak Struk',
+        text: 'Fitur cetak struk belum tersedia.'
+    });
+};
 </script>
 </body>
 </html>
