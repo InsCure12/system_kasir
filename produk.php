@@ -153,11 +153,11 @@ if (isset($_POST['update'])) {
     <div class="row">
         <!-- Sidebar -->
         <nav class="col-md-2 d-none d-md-block sidebar py-4">
-            <div class="navbar-brand mb-4">7Eleven Mart</div>
+            <div class="navbar-brand mb-4">Kayu Kopi</div>
             <ul class="nav flex-column mb-4">
                 <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="karyawan.php">Karyawan</a></li>
-                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Member</a></li>
+                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Pelanggan</a></li>
                 <li class="nav-item"><a class="nav-link active" href="produk.php">Produk</a></li>
                 <li class="nav-item"><a class="nav-link" href="transaksi.php">Transaksi</a></li>
                 <li class="nav-item"><a class="nav-link" href="riwayat_transaksi.php">Riwayat</a></li>

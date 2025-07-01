@@ -65,7 +65,7 @@ include 'koneksi.php';
             <ul class="nav flex-column mb-4">
                 <li class="nav-item"><a class="nav-link active" href="#">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="karyawan.php">Karyawan</a></li>
-                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Member</a></li>
+                <li class="nav-item"><a class="nav-link" href="pelanggan.php">Pelanggan</a></li>
                 <li class="nav-item"><a class="nav-link" href="produk.php">Produk</a></li>
                 <li class="nav-item"><a class="nav-link" href="transaksi.php">Transaksi</a></li>
                 <li class="nav-item"><a class="nav-link" href="riwayat_transaksi.php">Riwayat</a></li>
@@ -159,18 +159,12 @@ include 'koneksi.php';
                                         ORDER BY t.tanggal_transaksi DESC
                                         LIMIT 7"); 
                                     while ($row = mysqli_fetch_assoc($query)) {
-                                        $status = strtolower($row['status']);
-                                        $badge = 'status-badge ';
-                                        if ($status == 'completed' || $status == 'selesai') $badge .= 'status-completed';
-                                        elseif ($status == 'pending') $badge .= 'status-pending';
-                                        else $badge .= 'status-canceled';
                                         echo "<tr>
                                             <td>{$no}</td>
                                             <td>{$row['nama_pelanggan']}</td>
                                             <td>#{$row['id_transaksi']}</td>
                                             <td>{$row['tanggal_transaksi']}</td>
                                             <td>Rp " . number_format($row['total'], 0, ',', '.') . "</td>
-                                            <td><span class='$badge'>" . ucfirst($row['status']) . "</span></td>
                                         </tr>";
                                         $no++;
                                     }
