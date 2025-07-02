@@ -12,7 +12,7 @@ session_start();
         body {
             min-height: 100vh;
             margin: 0;
-            background: url('https://www.familydocs.org/wp-content/uploads/2019/11/coffee-shop-1149155_1920.jpg') no-repeat center center fixed;
+            background: url('https://cdn.financebuzz.com/filters:quality(75)/images/2024/12/14/7_eleven_mini_mart_logo.jpg') no-repeat center center fixed;
             background-size: cover;
             display: flex;
             align-items: center;
@@ -147,8 +147,8 @@ session_start();
 </head>
 <body>
     <form class="login-container" action="proses_login.php" method="POST">
-        <img src="https://png.pngtree.com/recommend-works/png-clipart/20240827/ourmid/pngtree-simple-coffee-shop-logo-png-image_13624083.png" alt="avatar" class="avatar">
-        <div class="welcome">Kayu Kopi</div>
+        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/d/d4/7-eleven-brand.svg/1200px-7-eleven-brand.svg.png" alt="avatar" class="avatar">
+        <div class="welcome">711 Mart</div>
         <?php if (isset($_SESSION['error'])) { echo "<div class='error-msg'>" . $_SESSION['error'] . "</div>"; unset($_SESSION['error']); } ?>
         <div class="input-group">
             <i class="fa fa-user"></i>

@@ -69,7 +69,7 @@ $pelanggan = mysqli_query($con, "SELECT * FROM pelanggan ORDER BY nama_pelanggan
     <div class="row">
         <!-- Sidebar -->
         <nav class="col-md-2 d-none d-md-block sidebar py-4">
-            <div class="navbar-brand mb-4">Kayu Kopi</div>
+            <div class="navbar-brand mb-4">711 Mart</div>
             <ul class="nav flex-column mb-4">
                 <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="karyawan.php">Karyawan</a></li>

@@ -22,6 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart'])) {
     $tanggal = date('Y-m-d H:i:s');
     $nama_pelanggan = mysqli_real_escape_string($con, $_POST['nama_pelanggan']);
 
+    $nama_pelanggan = trim($_POST['nama_pelanggan']);
+    if ($nama_pelanggan === "") $nama_pelanggan = "Umum";
+    $nama_pelanggan = mysqli_real_escape_string($con, $nama_pelanggan);
+
     // Cek pelanggan
     $cek_pelanggan = mysqli_query($con, "SELECT id_pelanggan FROM pelanggan WHERE nama_pelanggan='$nama_pelanggan' LIMIT 1");
     if (mysqli_num_rows($cek_pelanggan) > 0) {
@@ -222,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart'])) {
     <div class="row">
         <!-- Sidebar -->
          <nav class="col-md-2 d-none d-md-block sidebar py-4">
-            <div class="navbar-brand mb-4">Kayu Kopi</div>
+            <div class="navbar-brand mb-4">711 Mart</div>
             <ul class="nav flex-column mb-4">
                 <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" href="karyawan.php">Karyawan</a></li>
@@ -394,7 +398,7 @@ function payOrder() {
     let diskon = parseInt(document.getElementById('diskonInput').value) || 0;
     let total = document.getElementById('grandTotal').innerText.replace(/[^\d]/g, '');
     let namaPelanggan = document.getElementById('namaPelanggan').value.trim();
-    if(namaPelanggan === "") return alert('Nama pelanggan wajib diisi!');
+    // Hapus validasi wajib isi nama pelanggan
     let metode = document.getElementById('metodePembayaran').value;
     fetch(window.location.href, {
         method: 'POST',
