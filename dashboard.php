@@ -204,20 +204,6 @@ include 'koneksi.php';
     </div>
 </div>
 <?php
-// Ambil total penjualan per hari di bulan ini
-$dailySales = [];
-$days = [];
-$bulan = date('m');
-$tahun = date('Y');
-for ($i = 1; $i <= date('t'); $i++) {
-    $tgl = sprintf('%04d-%02d-%02d', $tahun, $bulan, $i);
-    $q = mysqli_query($con, "SELECT SUM(total) as total FROM transaksi WHERE tanggal_transaksi='$tgl'");
-    $d = mysqli_fetch_assoc($q);
-    $dailySales[] = (int)($d['total'] ?? 0);
-    $days[] = $i;
-}
-?>
-<?php
 // Ambil total penjualan per bulan (12 bulan terakhir)
 $salesData = [];
 $monthLabels = [];
@@ -231,44 +217,6 @@ for ($i = 11; $i >= 0; $i--) {
     $monthLabels[] = $label;
 }
 ?>
-<?php
-// Hitung rata-rata total transaksi per bulan (12 bulan terakhir)
-$q = mysqli_query($con, "
-    SELECT YEAR(tanggal_transaksi) as tahun, MONTH(tanggal_transaksi) as bulan, SUM(total) as total_bulan
-    FROM transaksi
-    GROUP BY tahun, bulan
-    ORDER BY tahun DESC, bulan DESC
-    LIMIT 12
-");
-$total = 0;
-$bulan = 0;
-while ($row = mysqli_fetch_assoc($q)) {
-    $total += $row['total_bulan'];
-    $bulan++;
-}
-$avg_per_month = $bulan > 0 ? $total / $bulan : 0;
-?>
-<?php
-// Total penjualan hari ini
-$q = mysqli_query($con, "SELECT SUM(total) as total FROM transaksi WHERE DATE(tanggal_transaksi) = CURDATE()");
-$d = mysqli_fetch_assoc($q);
-$total_today = $d['total'] ?? 0;
-
-// Total penjualan kemarin
-$q = mysqli_query($con, "SELECT SUM(total) as total FROM transaksi WHERE DATE(tanggal_transaksi) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)");
-$d = mysqli_fetch_assoc($q);
-$total_yesterday = $d['total'] ?? 0;
-
-// Hitung persentase perubahan
-if ($total_yesterday > 0) {
-    $percent = (($total_today - $total_yesterday) / $total_yesterday) * 100;
-} else {
-    $percent = $total_today > 0 ? 100 : 0;
-}
-$percent_label = ($percent >= 0 ? '+' : '') . number_format($percent, 1) . '% since yesterday';
-$percent_class = $percent >= 0 ? 'text-success' : 'text-danger';
-?>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     var ctx = document.getElementById('barChart').getContext('2d');
